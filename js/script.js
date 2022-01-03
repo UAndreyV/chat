@@ -104,7 +104,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     .then(out => {
                         let city = out.location.city;
                         let localityName = out.location.localityName;
-                        fetch(`https://api.telegram.org/bot${botId}:${token}/sendMessage?chat_id=${chatId}&text=Город:%20${city}%20Район:%20${localityName}%0a${input}`)
+                        fetch(`https://api.telegram.org/bot${botId}:${token}/sendMessage?chat_id=${chatId}&text=Город:%20${city}%20Район:%20${localityName}%0a Сообщение: ${input}`)
                     });
                 localStorage.setItem('msg', input);
                 story = true;
@@ -116,11 +116,15 @@ window.addEventListener('DOMContentLoaded', () => {
                 .then(r => r.json())
                 .then(out => {
                     try {
-                        const replyMessange = out.result[out.result.length - 1].channel_post.reply_to_message.text;
+                       const replyMessange = out.result[out.result.length - 1].channel_post.reply_to_message.text.split(' ');
                         const timeMessage = out.result[out.result.length - 1].channel_post.date;
+                        let index = replyMessange.indexOf('Сообщение:');
+                        let textReplyMessange = replyMessange.splice(index + 1, replyMessange.length - 1).join(' ');
+
+                        console.log(textReplyMessange);
 
                         if (localStorage.getItem('timeMessage') != timeMessage &&
-                            replyMessange == localStorage.getItem('msg')) {
+                            textReplyMessange == localStorage.getItem('msg')) {
                             const textMessange = out.result.pop().channel_post.text;
                             addMessange(body, textMessange, 'chat__body-msg');
                             localStorage.setItem('timeMessage', timeMessage);
